@@ -111,4 +111,55 @@ SELECT
 FROM employees
 WHERE employeeNumber = 1080;
 
+-- Ejercicio 6
+-- Ver todos los triggers de la base de datos
+SHOW TRIGGERS;
 
+-- Ver el código fuente de cada trigger
+SHOW CREATE TRIGGER film_after_insert;
+SHOW CREATE TRIGGER film_after_update;
+SHOW CREATE TRIGGER film_after_delete;
+
+
+-- 1. film_after_insert
+-- Se ejecuta después de insertar una película en film.
+-- Copia el film_id, title y description a film_text.
+
+-- Código:
+CREATE TRIGGER film_after_insert
+AFTER INSERT ON film
+FOR EACH ROW
+BEGIN
+    INSERT INTO film_text (film_id, title, description)
+    VALUES (NEW.film_id, NEW.title, NEW.description);
+END;
+
+
+-- 2. film_after_update
+-- Se ejecuta después de actualizar una película en film.
+-- Actualiza el title y description correspondientes en film_text.
+
+-- Código:
+CREATE TRIGGER film_after_update
+AFTER UPDATE ON film
+FOR EACH ROW
+BEGIN
+    UPDATE film_text
+    SET title = NEW.title,
+        description = NEW.description
+    WHERE film_id = OLD.film_id;
+END;
+
+
+-- 3. film_after_delete
+-- Se ejecuta después de eliminar una película de film.
+-- Elimina de film_text el registro correspondiente.
+
+-- Código:
+CREATE TRIGGER film_after_delete
+AFTER DELETE ON film
+FOR EACH ROW
+BEGIN
+    DELETE FROM film_text
+    WHERE film_id = OLD.film_id;
+END;
